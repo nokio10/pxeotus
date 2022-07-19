@@ -1,6 +1,6 @@
 # -*- mode: ruby -*-
 # vi: set ft=ruby :
-# export VAGRANT_EXPERIMENTAL="disks"
+export VAGRANT_EXPERIMENTAL="disks"
 Vagrant.configure("2") do |config|
 config.vm.define "pxeserver" do |server|
 server.vm.box = 'centos/8.4'
@@ -8,16 +8,12 @@ server.vm.disk :disk, size: "15GB", name: "extra_storage1"
 server.vm.host_name = 'pxeserver'
 server.vm.network :private_network,
 ip: "10.0.0.20",
+server.vm.network :private_network, ip: "192.168.50.10", adapter: 3
 virtualbox__intnet: 'pxenet'
-# server.vm.network "forwarded_port", guest: 80, host: 8081
+server.vm.network "forwarded_port", guest: 80, host: 8081
 server.vm.provider "virtualbox" do |vb|
 vb.memory = "1024"
 vb.customize ["modifyvm", :id, "--natdnshostresolver1", "on"]
-end
-# ENABLE to setup PXE
-server.vm.provision "shell",
-name: "Setup PXE server",
-path: "setup_pxe.sh"
 end
 # config used from this
 # https://github.com/eoli3n/vagrant-pxe/blob/master/client/Vagrantfile
